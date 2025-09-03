@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/utils/show_toast.dart';
 
 class FloatingbuttonNewChatWidget extends StatelessWidget {
   const FloatingbuttonNewChatWidget({super.key});
@@ -21,7 +22,7 @@ class FloatingbuttonNewStatusWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () {},
+      onPressed: () {showToast(context, "The feature is not implemented yet", 1000);},
       tooltip: 'New Status',
       child: const Icon(Icons.camera_alt),
       backgroundColor: Colors.green,
