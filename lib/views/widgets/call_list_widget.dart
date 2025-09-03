@@ -8,7 +8,7 @@ class CallListWidget extends StatefulWidget {
 }
 
 class _CallListWidgetState extends State<CallListWidget> {
-  List<List<String>> chats = [
+  List<List<String>> calls = [
     ["orang", "Outgoing", "17:29"],
     ["orang juga", "Incoming", "17:30"],
     ["+62812345678910", "Outgoing", "17:31"],
@@ -25,16 +25,16 @@ class _CallListWidgetState extends State<CallListWidget> {
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView.builder(
-        itemCount: chats.length,
+        itemCount: calls.length,
         itemBuilder: (BuildContext context, int index) {
           int pic_index = index + 1;
           return ListTile(
-            title: Text(chats[index][0], overflow: TextOverflow.ellipsis,),
-            subtitle: Text(chats[index][1], overflow: TextOverflow.ellipsis,),
+            title: Text(calls[index][0], overflow: TextOverflow.ellipsis,),
+            subtitle: Text(calls[index][1], overflow: TextOverflow.ellipsis,),
             leading: CircleAvatar(
               backgroundImage: AssetImage('assets/images/$pic_index.jpg'),
             ),
-            trailing: Text(chats[index][2]),
+            trailing: Text(calls[index][2]),
           );
         },
       ),
