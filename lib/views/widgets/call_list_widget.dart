@@ -9,12 +9,16 @@ class CallListWidget extends StatefulWidget {
 
 class _CallListWidgetState extends State<CallListWidget> {
   List<List<String>> chats = [
-    ["orang", "Outgoing"],
-    ["orang juga", "Incoming"],
-    ["+62812345678910", "Outgoing"],
-    ["someone", "Missed"],
-    ["orang lain", "Incoming"],
-    ["orang", "Outgoing"],
+    ["orang", "Outgoing", "17:29"],
+    ["orang juga", "Incoming", "17:30"],
+    ["+62812345678910", "Outgoing", "17:31"],
+    ["someone", "Missed", "17:32"],
+    ["orang lain", "Incoming", "17:33"],
+    ["orang", "Outgoing", "17:34"],
+    ["orang juga", "Incoming", "17:35"],
+    ["+62812345678910", "Outgoing", "17:36"],
+    ["orang lain", "Incoming", "17:38"],
+    ["orang", "Outgoing", "17:39"],
   ];
   
   @override
@@ -30,7 +34,7 @@ class _CallListWidgetState extends State<CallListWidget> {
             leading: CircleAvatar(
               backgroundImage: AssetImage('assets/images/$pic_index.jpg'),
             ),
-            trailing: Text("Yesterday"),
+            trailing: Text(chats[index][2]),
           );
         },
       ),
