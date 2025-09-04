@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/utils/show_toast.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 
 class ChatRoomPage extends StatefulWidget {
@@ -13,21 +14,23 @@ class ChatRoomPage extends StatefulWidget {
 
 class _ChatRoomPageState extends State<ChatRoomPage> {
   List<List<String>> messages = [
-    ["Hello, this is a chat bubble!", "17:29"],
-    ["How are you?", "17:30"],
-    ["I'm fine, thank you!", "17:31"],
-    ["What about you?", "17:31"],
-    ["I'm doing great!", "17:32"],
-    ["Let's catch up later.", "17:33"],
-    ["Sure, see you soon!", "17:34"],
-    ["Bye!", "17:35"],
-    ["Take care!", "17:36"],
-    ["Have a nice day!", "17:37"],
-    ["See you later!", "17:38"],
-    ["Goodbye!", "17:39"],
-    ["Talk to you soon!", "17:40"],
     ["Stay safe!", "17:41"],
+    ["Talk to you soon!", "17:40"],
+    ["Goodbye!", "17:39"],
+    ["See you later!", "17:38"],
+    ["Have a nice day!", "17:37"],
+    ["Take care!", "17:36"],
+    ["Bye!", "17:35"],
+    ["Sure, see you soon!", "17:34"],
+    ["Let's catch up later.", "17:33"],
+    ["I'm doing great!", "17:32"],
+    ["What about you?", "17:31"],
+    ["I'm fine, thank you!", "17:31"],
+    ["How are you?", "17:30"],
+    ["Hello, this is a chat bubble!", "17:29"],
   ];
+
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +61,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           children: [
             Expanded(
               child: ListView.builder(
+                reverse: true,
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   return ChatBubble(
@@ -116,6 +120,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _controller,
+                    onEditingComplete: () {
+                      showToast(context, _controller.text, 1000);
+                      _controller.clear();
+                    },
                     decoration: InputDecoration(
                       hintText: "Message",
                       prefixIcon: IconButton(

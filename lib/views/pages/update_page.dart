@@ -56,7 +56,6 @@ class _UpdatePageState extends State<UpdatePage> {
                     backgroundImage: AssetImage('assets/images/${index +1}.jpg'),
                   ),
                 ),
-                trailing: Text("12:23"),
               );
             },
           ),

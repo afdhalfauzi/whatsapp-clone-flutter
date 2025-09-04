@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/views/pages/animate_to_page.dart';
+import 'package:flutter_application_1/utils/animate_to_page.dart';
 import 'package:flutter_application_1/views/pages/chat/chatroom_page.dart';
 
 class ChatListWidget extends StatefulWidget {
