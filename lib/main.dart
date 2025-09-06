@@ -25,28 +25,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    // return Provider<MqttConnection>(
-    //   create: (context) {
-    //     final mqtt = MqttConnection();
-    //     mqtt.connectMQTT();
-    //     return mqtt;
-    //   },
-    //   child: ValueListenableBuilder(
-    //     valueListenable: isDarkModeNotifier,
-    //     builder: (context, isDarkMode, child) {
-    //       return MaterialApp(
-    //         debugShowCheckedModeBanner: false,
-    //         theme: ThemeData(
-    //           colorScheme: ColorScheme.fromSeed(
-    //             seedColor: Colors.teal,
-    //             brightness: isDarkMode ? Brightness.dark : Brightness.light,
-    //           ),
-    //         ),
-    //         home: WidgetTree(),
-    //       );
-    //     }
-    //   ),
-    // );
     return MultiProvider(providers: [
       Provider<MqttConnection>(
         create: (context) {
