@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/data/database_manager.dart';
+import 'package:flutter_application_1/mqtt/mqtt_connection.dart';
 import 'package:flutter_application_1/utils/show_toast.dart';
+import 'package:provider/provider.dart';
 
 class FloatingbuttonNewChatWidget extends StatelessWidget {
   const FloatingbuttonNewChatWidget({super.key});
@@ -7,26 +10,51 @@ class FloatingbuttonNewChatWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () {},
+      onPressed: () {
+        final mqtt = Provider.of<MqttConnection>(context, listen: false);
+        mqtt.publishMessage('topic/test', 'Hello from Floating Button');
+        showToast(context, "published", 1000);
+      },
       tooltip: 'New Chat',
-      child: const Icon(Icons.add_comment),
       backgroundColor: Colors.green,
-      foregroundColor: Colors.black
+      foregroundColor: Colors.black,
+      child: const Icon(Icons.add_comment),
     );
   }
 }
 
-class FloatingbuttonNewStatusWidget extends StatelessWidget {
+class FloatingbuttonNewStatusWidget extends StatefulWidget {
   const FloatingbuttonNewStatusWidget({super.key});
 
   @override
+  State<FloatingbuttonNewStatusWidget> createState() => _FloatingbuttonNewStatusWidgetState();
+}
+
+class _FloatingbuttonNewStatusWidgetState extends State<FloatingbuttonNewStatusWidget> {
+  
+  @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () {showToast(context, "The feature is not implemented yet", 1000);},
+      onPressed: () {
+        final db = Provider.of<DatabaseManager>(context, listen: false);
+        db.newUser("Ada", "Hello, I'm Ada!", "13:23");
+        // db.updateUser("1", {"chat": "Updated chat message!", "time": "14:00"});
+        db.deleteUser( "3");
+        db.getUser("1").then((doc) {
+          if (doc.exists) {
+            final data = doc.data() as Map<String, dynamic>;
+            showToast(context, "User: ${data['name']}, Chat: ${data['chat']}, Time: ${data['time']}", 2000);
+          } else {
+            showToast(context, "No such user!", 1000);
+          }
+        }).catchError((error) {
+          showToast(context, "Error fetching user: $error", 2000);
+        });
+      },
       tooltip: 'New Status',
-      child: const Icon(Icons.camera_alt),
       backgroundColor: Colors.green,
-      foregroundColor: Colors.black
+      foregroundColor: Colors.black,
+      child: const Icon(Icons.camera_alt),
     );
   }
 }
@@ -39,9 +67,9 @@ class FloatingbuttonNewCommunityWidget extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () {},
       tooltip: 'New Community',
-      child: const Icon(Icons.group_add),
       backgroundColor: Colors.green,
-      foregroundColor: Colors.black
+      foregroundColor: Colors.black,
+      child: const Icon(Icons.group_add),
     );
   }
 }
@@ -54,9 +82,9 @@ class FloatingbuttonNewCallWidget extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () {},
       tooltip: 'New Call',
-      child: const Icon(Icons.add_call),
       backgroundColor: Colors.green,
-      foregroundColor: Colors.black
+      foregroundColor: Colors.black,
+      child: const Icon(Icons.add_call),
     );
   }
 }

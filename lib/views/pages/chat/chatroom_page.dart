@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/utils/show_toast.dart';
+import 'package:flutter_application_1/data/database_manager.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ChatRoomPage extends StatefulWidget {
   final String title;
@@ -34,6 +36,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   @override
   Widget build(BuildContext context) {
+    final db = Provider.of<DatabaseManager>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -59,71 +63,81 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Expanded(
-              child: ListView.builder(
-                reverse: true,
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  return ChatBubble(
-                    elevation: 0,
-                    shadowColor: Colors.transparent,
-                    clipper: ChatBubbleClipper1(
-                      type: index % 2 == 0
-                          ? BubbleType.receiverBubble
-                          : BubbleType.sendBubble,
-                    ),
-                    alignment: index % 2 == 0
-                        ? Alignment.centerLeft
-                        : Alignment.centerRight,
-                    margin: EdgeInsets.only(top: 20),
-                    backGroundColor: index % 2 == 0
-                        ? Theme.of(context).colorScheme.onInverseSurface
-                        : Colors.teal,
-                    child: Container(
-                      constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * 0.8,
-                      ),
-                      child: Row(
-                        // mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            messages[index][0],
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
+            FutureBuilder(
+              // future: db.getAllChats(),
+              future: db.getChatsQuery(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Text('No chats found');
+                } else {
+                  final chats = snapshot.data!;
+                  return Expanded(
+                    child: ListView.builder(
+                      reverse: true,
+                      itemCount: chats.length,
+                      itemBuilder: (context, index) {
+                        final chat = chats[index] as Map<String, dynamic>;
+                        return ChatBubble(
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          clipper: ChatBubbleClipper1(
+                            type: BubbleType.sendBubble,
+                          ),
+                          alignment: Alignment.centerRight,
+                          margin: EdgeInsets.only(top: 20),
+                          backGroundColor: Colors.teal,
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.8,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  chat['chat'],
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  DateFormat("HH:mm").format( //only show the HH:mm part
+                                    DateFormat("HH:mm:ss").parse(chat['time']),
+                                  ),
+                                  // chat['time'],
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.inverseSurface,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(width: 10),
-                          Text(
-                            messages[index][1],
-                            style: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.inverseSurface,
-                              fontSize: 10,
-                            ),
-                          ),
-                          if (index % 2 != 0)
-                            Icon(
-                              Icons.double_arrow,
-                              size: 10,
-                              color: Colors.lightBlue
-                            ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   );
-                },
-              ),
+                }
+              },
             ),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    onEditingComplete: () {
-                      showToast(context, _controller.text, 1000);
-                      _controller.clear();
+                    onSubmitted: (text) {
+                      setState(() {
+                        db.newChat(text);
+                        _controller.clear();
+                      });
                     },
                     decoration: InputDecoration(
                       hintText: "Message",

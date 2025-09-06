@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/data/notifiers.dart';
+import 'package:flutter_application_1/mqtt/mqtt_app_state.dart';
+import 'package:flutter_application_1/mqtt/mqtt_connection.dart';
 import 'package:flutter_application_1/views/pages/calls_page.dart';
 import 'package:flutter_application_1/views/pages/communities_page.dart';
 import 'package:flutter_application_1/views/pages/chat/chats_page.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_application_1/views/pages/update_page.dart';
 import 'package:flutter_application_1/views/widgets/appbar_widget.dart';
 import 'package:flutter_application_1/views/widgets/floatingbutton_widget.dart';
 import 'package:flutter_application_1/views/widgets/navbar_widget.dart';
+import 'package:provider/provider.dart';
 
 List<Widget> pages = [ChatPage(), UpdatePage(), CommunitiesPage(), CallsPage()];
 List<Widget> fabButtons = [
@@ -25,11 +28,14 @@ class WidgetTree extends StatefulWidget {
 
 class _WidgetTreeState extends State<WidgetTree> {
   late final PageController _pageController;
+  late final mqtt = MqttConnection();
+
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: selectedPageNotifier.value);
+    mqtt.connectMQTT();
 
     // Listen to notifier and animate to page if changed from navbar
     selectedPageNotifier.addListener(() {
@@ -40,6 +46,7 @@ class _WidgetTreeState extends State<WidgetTree> {
     });
   }
 
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -48,22 +55,25 @@ class _WidgetTreeState extends State<WidgetTree> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: selectedPageNotifier,
-      builder: (context, selectedPage, child) {
-        return Scaffold(
-          appBar: AppbarWidget(),
-          floatingActionButton: fabButtons[selectedPage],
-          bottomNavigationBar: NavbarWidget(),
-          body: PageView(
-            controller: _pageController,
-            onPageChanged: (index) {
-              selectedPageNotifier.value = index;
-            },
-            children: pages,
-          ),
-        );
-      }
+    return ChangeNotifierProvider<MQTTAppState>(
+      create: (context) => mqtt.mqttState,
+      child: ValueListenableBuilder(
+        valueListenable: selectedPageNotifier,
+        builder: (context, selectedPage, child) {
+          return Scaffold(
+            appBar: AppbarWidget(),
+            floatingActionButton: fabButtons[selectedPage],
+            bottomNavigationBar: NavbarWidget(),
+            body: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                selectedPageNotifier.value = index;
+              },
+              children: pages,
+            ),
+          );
+        }
+      ),
     );
   }
 }
