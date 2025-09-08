@@ -108,7 +108,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                                 SizedBox(width: 10),
                                 Text(
                                   DateFormat("HH:mm").format( //only show the HH:mm part
-                                    DateFormat("HH:mm:ss").parse(chat['time']),
+                                    DateFormat("yyyy-MM-dd, hh:mm:ss").parse(chat['time']),
                                   ),
                                   // chat['time'],
                                   style: TextStyle(

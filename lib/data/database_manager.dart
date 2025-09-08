@@ -41,7 +41,7 @@ class DatabaseManager {
     String chatId = docRef.id;
     return await chatCollection
         .doc(chatId)
-        .set({'chat': text, 'time': DateFormat.Hms().format(DateTime.now())});
+        .set({'chat': text, 'time': DateFormat('yyyy-MM-dd, hh:mm:ss').format(DateTime.now())});
   }
 
   Future<List> getAllChats() async { //not ordered
