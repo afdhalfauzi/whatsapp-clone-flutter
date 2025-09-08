@@ -7,7 +7,6 @@ class DatabaseManager {
       db.collection('users'); // Collection reference
   final CollectionReference chatCollection =
       db.collection('chats');//.orderBy("time", descending: true); // Collection reference
-      // db.collection('chats').orderBy("time", descending: true); // Collection reference
 
     Query chatsQuery = db.collection('chats').orderBy("time", descending: true);
 
@@ -41,7 +40,7 @@ class DatabaseManager {
     String chatId = docRef.id;
     return await chatCollection
         .doc(chatId)
-        .set({'chat': text, 'time': DateFormat('yyyy-MM-dd, hh:mm:ss').format(DateTime.now())});
+        .set({'chat': text, 'time': DateFormat('yyyy-MM-dd, HH:mm:ss').format(DateTime.now())});
   }
 
   Future<List> getAllChats() async { //not ordered
