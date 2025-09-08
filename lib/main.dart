@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/data/database_manager.dart';
 import 'package:flutter_application_1/data/notifiers.dart';
 import 'package:flutter_application_1/firebase_options.dart';
+import 'package:flutter_application_1/mqtt/mqtt_app_state.dart';
 import 'package:flutter_application_1/mqtt/mqtt_connection.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
 import 'package:provider/provider.dart';
@@ -26,17 +27,15 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
+      Provider<DatabaseManager>(create: (context) => DatabaseManager()),
+      ChangeNotifierProvider(create: (context) => MQTTAppState()),
       Provider<MqttConnection>(
         create: (context) {
           final mqtt = MqttConnection();
-          mqtt.connectMQTT();
           return mqtt;
         },
       ),
-      Provider<DatabaseManager>(create: (context) {
-        final db = DatabaseManager();
-        return db;
-      },)
+      
     ], child: ValueListenableBuilder(
         valueListenable: isDarkModeNotifier,
         builder: (context, isDarkMode, child) {

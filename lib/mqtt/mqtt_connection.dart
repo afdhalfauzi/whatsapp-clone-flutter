@@ -5,11 +5,11 @@ class MqttConnection {
     late MQTTManager mqttClient;
     late MQTTAppState mqttState;
 
-  void connectMQTT() {
-    mqttState = MQTTAppState();
+
+  void connectMQTT(MQTTAppState state) {
     mqttClient = MQTTManager(
-        topic: 'topic/test',
-        state: mqttState);
+        topic: 'topic/test',  //TODO make dynamic topic
+        state: state);
     mqttClient.initializeMQTTClient();
     mqttClient.connect();
   }

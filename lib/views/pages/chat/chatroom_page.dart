@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/data/database_manager.dart';
+import 'package:flutter_application_1/mqtt/mqtt_app_state.dart';
+import 'package:flutter_application_1/mqtt/mqtt_connection.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -15,28 +17,23 @@ class ChatRoomPage extends StatefulWidget {
 }
 
 class _ChatRoomPageState extends State<ChatRoomPage> {
-  List<List<String>> messages = [
-    ["Stay safe!", "17:41"],
-    ["Talk to you soon!", "17:40"],
-    ["Goodbye!", "17:39"],
-    ["See you later!", "17:38"],
-    ["Have a nice day!", "17:37"],
-    ["Take care!", "17:36"],
-    ["Bye!", "17:35"],
-    ["Sure, see you soon!", "17:34"],
-    ["Let's catch up later.", "17:33"],
-    ["I'm doing great!", "17:32"],
-    ["What about you?", "17:31"],
-    ["I'm fine, thank you!", "17:31"],
-    ["How are you?", "17:30"],
-    ["Hello, this is a chat bubble!", "17:29"],
-  ];
-
   final TextEditingController _controller = TextEditingController();
+  late MQTTAppState mqttAppState;
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () {
+      final mqtt = Provider.of<MqttConnection>(context, listen: false);
+      mqttAppState = Provider.of<MQTTAppState>(context, listen: false);
+      mqtt.connectMQTT(mqttAppState);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final db = Provider.of<DatabaseManager>(context, listen: false);
+    mqttAppState = Provider.of<MQTTAppState>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +61,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FutureBuilder(
-              // future: db.getAllChats(),
               future: db.getChatsQuery(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -107,8 +103,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                                 ),
                                 SizedBox(width: 10),
                                 Text(
-                                  DateFormat("HH:mm").format( //only show the HH:mm part
-                                    DateFormat("yyyy-MM-dd, hh:mm:ss").parse(chat['time']),
+                                  DateFormat("HH:mm").format(
+                                    //only show the HH:mm part
+                                    DateFormat(
+                                      "yyyy-MM-dd, HH:mm:ss",
+                                    ).parse(chat['time']),
                                   ),
                                   // chat['time'],
                                   style: TextStyle(
@@ -128,13 +127,42 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 }
               },
             ),
+            Text(
+              (() {
+                if (mqttAppState.getAppConnectionState ==
+                    MQTTAppConnectionState.connected) {
+                  return "Connected";
+                } else if (mqttAppState.getAppConnectionState ==
+                    MQTTAppConnectionState.connecting) {
+                  return "Connecting...";
+                } else if (mqttAppState.getAppConnectionState ==
+                    MQTTAppConnectionState.disconnected) {
+                  return "Disconnected";
+                } else if (mqttAppState.getAppConnectionState ==
+                    MQTTAppConnectionState.error_when_connecting) {
+                  return "Error when connecting";
+                } else {
+                  return "Unknown state";
+                }
+              })(),
+            ),
+            Text(Provider.of<MQTTAppState>(context).getReceivedText, style: TextStyle(fontSize: 25, color: Colors.green),),
+
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _controller,
                     onSubmitted: (text) {
+                      final mqtt = Provider.of<MqttConnection>(
+                        context,
+                        listen: false,
+                      );
                       setState(() {
+                        mqtt.publishMessage(
+                          "topic/test",
+                          "$text from ${widget.title} ",
+                        );
                         db.newChat(text);
                         _controller.clear();
                       });

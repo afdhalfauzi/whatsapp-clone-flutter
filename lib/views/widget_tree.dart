@@ -28,14 +28,12 @@ class WidgetTree extends StatefulWidget {
 
 class _WidgetTreeState extends State<WidgetTree> {
   late final PageController _pageController;
-  late final mqtt = MqttConnection();
 
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: selectedPageNotifier.value);
-    mqtt.connectMQTT();
 
     // Listen to notifier and animate to page if changed from navbar
     selectedPageNotifier.addListener(() {
@@ -55,25 +53,23 @@ class _WidgetTreeState extends State<WidgetTree> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<MQTTAppState>(
-      create: (context) => mqtt.mqttState,
-      child: ValueListenableBuilder(
-        valueListenable: selectedPageNotifier,
-        builder: (context, selectedPage, child) {
-          return Scaffold(
-            appBar: AppbarWidget(),
-            floatingActionButton: fabButtons[selectedPage],
-            bottomNavigationBar: NavbarWidget(),
-            body: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                selectedPageNotifier.value = index;
-              },
-              children: pages,
-            ),
-          );
-        }
-      ),
+
+    return ValueListenableBuilder(
+      valueListenable: selectedPageNotifier,
+      builder: (context, selectedPage, child) {
+        return Scaffold(
+          appBar: AppbarWidget(),
+          floatingActionButton: fabButtons[selectedPage],
+          bottomNavigationBar: NavbarWidget(),
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              selectedPageNotifier.value = index;
+            },
+            children: pages,
+          ),
+        );
+      }
     );
   }
 }

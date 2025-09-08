@@ -142,9 +142,10 @@ class MQTTManager {
     final MqttConnectMessage connMess = MqttConnectMessage()
         .withClientIdentifier(_identifier)
         .withWillTopic('willTopic')
-        .withWillMessage('willMessage')
-        .startClean()
+        .withWillMessage('offline')
+        // .startClean()
         .withWillQos(MqttQos.atLeastOnce);
+        // .withCleanSession(false);
     print('EXAMPLE::Mousquitto client connecting....');
     _client!.connectionMessage = connMess;
   }
@@ -176,7 +177,7 @@ class MQTTManager {
     }
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     builder.addString(message);
-    _client!.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
+    _client!.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!, retain: true);
   }
 
   void onSubscribed(String topic) {
