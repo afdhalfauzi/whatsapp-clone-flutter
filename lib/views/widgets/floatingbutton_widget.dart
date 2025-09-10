@@ -13,7 +13,7 @@ class FloatingbuttonNewChatWidget extends StatelessWidget {
       onPressed: () {
         final mqtt = Provider.of<MqttConnection>(context, listen: false);
         mqtt.publishMessage('topic/test', 'Hello from Floating Button');
-        showToast(context, "published", 1000);
+        showToast("published");
       },
       tooltip: 'New Chat',
       backgroundColor: Colors.green,
@@ -43,12 +43,12 @@ class _FloatingbuttonNewStatusWidgetState extends State<FloatingbuttonNewStatusW
         db.getUser("1").then((doc) {
           if (doc.exists) {
             final data = doc.data() as Map<String, dynamic>;
-            showToast(context, "User: ${data['name']}, Chat: ${data['chat']}, Time: ${data['time']}", 2000);
+            showSnackbar(context, "User: ${data['name']}, Chat: ${data['chat']}, Time: ${data['time']}", 2000);
           } else {
-            showToast(context, "No such user!", 1000);
+            showSnackbar(context, "No such user!", 1000);
           }
         }).catchError((error) {
-          showToast(context, "Error fetching user: $error", 2000);
+          showSnackbar(context, "Error fetching user: $error", 2000);
         });
       },
       tooltip: 'New Status',
