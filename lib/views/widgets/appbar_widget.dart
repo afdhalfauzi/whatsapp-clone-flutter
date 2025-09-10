@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/data/notifiers.dart';
+import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/views/pages/xmp_signInWithGoogle.dart';
 
 class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
-  const AppbarWidget({super.key});
+  AppbarWidget({super.key});
 
   static const List icons = [
     Icons.camera_alt_outlined,
@@ -11,6 +13,7 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
     Icons.search,
   ];
   static const List title = ["WhatsApp", "Updates", "Communities", "Calls"];
+  final GoogleAuthService _googleAuthService = GoogleAuthService();
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -24,7 +27,27 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
           title: Text(title[selectedPage]),
           actions: [
             IconButton(icon: Icon(icons[selectedPage]), onPressed: () {}),
-            IconButton(icon: Icon(Icons.more_vert_rounded), onPressed: () {}),
+            // IconButton(icon: Icon(Icons.more_vert_rounded), onPressed: () {}),
+            PopupMenuButton(
+              icon: Icon(Icons.more_vert),
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                const PopupMenuItem(
+                  child: ListTile(
+                    leading: Icon(Icons.add),
+                    title: Text('Item 1'),
+                  ),
+                ),
+                const PopupMenuDivider(),
+                PopupMenuItem(
+                  child: Text('Sign Out'),
+                  onTap: () async {
+                    await AuthService().signout(context);
+                    _googleAuthService.signOut();
+
+                  },
+                ),
+              ],
+            ),
             IconButton(
               onPressed: () {
                 isDarkModeNotifier.value = !isDarkModeNotifier.value;
