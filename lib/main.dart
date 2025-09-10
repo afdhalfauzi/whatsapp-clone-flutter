@@ -5,7 +5,7 @@ import 'package:flutter_application_1/data/notifiers.dart';
 import 'package:flutter_application_1/firebase_options.dart';
 import 'package:flutter_application_1/mqtt/mqtt_app_state.dart';
 import 'package:flutter_application_1/mqtt/mqtt_connection.dart';
-import 'package:flutter_application_1/views/widget_tree.dart';
+import 'package:flutter_application_1/views/pages/signup_page.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -47,7 +47,10 @@ class _MyAppState extends State<MyApp> {
                 brightness: isDarkMode ? Brightness.dark : Brightness.light,
               ),
             ),
-            home: const WidgetTree(),
+            // home: const WidgetTree(),
+            home: SignupPage(),
+            // home: SignInDemo(),
+            // home: SignInScreen(),
           );
         }));
   }
