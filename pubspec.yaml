@@ -46,6 +46,8 @@ dependencies:
   google_fonts: ^6.3.1
   # google_sign_in: ^7.1.1
   google_sign_in: ^6.3.0
+  # flutter_native_splash: ^2.4.6
+  flutter_native_splash: ^2.2.7
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +62,25 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+flutter_native_splash:
+  android: true
+  ios: false
+  web: false
+
+  # color: "#000000"
+  color: "#FFFFFF"
+  color_dark: "#001414"
+  image: "assets/images/splash2.png"
+  branding: "assets/images/branding.png"
+
+  android_12:
+    # color: "#000000"
+    color_dark: "#001414"
+    color: "#FFFFFF"
+    image: "assets/images/splash2.png"
+    branding: "assets/images/branding.png"
+#   #generate new splash config :dart run flutter_native_splash:create
+
 
 # The following section is specific to Flutter packages.
 flutter:
