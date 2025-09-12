@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/data/notifiers.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/views/pages/signup_page.dart';
 import 'package:flutter_application_1/views/pages/xmp_signInWithGoogle.dart';
 
 class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
@@ -43,7 +44,12 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
                   onTap: () async {
                     await AuthService().signout(context);
                     _googleAuthService.signOut();
-
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => SignupPage(),
+                      ),
+                    );
                   },
                 ),
               ],

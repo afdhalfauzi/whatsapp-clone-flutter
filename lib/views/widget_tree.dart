@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/data/notifiers.dart';
 import 'package:flutter_application_1/views/pages/calls_page.dart';
@@ -10,8 +8,7 @@ import 'package:flutter_application_1/views/widgets/appbar_widget.dart';
 import 'package:flutter_application_1/views/widgets/floatingbutton_widget.dart';
 import 'package:flutter_application_1/views/widgets/navbar_widget.dart';
 
-final User? user = FirebaseAuth.instance.currentUser;
-List<Widget> pages = [ChatPage(), UpdatePage(user: user!,), CommunitiesPage(), CallsPage()];
+List<Widget> pages = [ChatPage(), UpdatePage(), CommunitiesPage(), CallsPage()];
 List<Widget> fabButtons = [
   FloatingbuttonNewChatWidget(),
   FloatingbuttonNewStatusWidget(),

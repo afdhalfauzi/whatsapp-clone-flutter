@@ -17,10 +17,12 @@ class SignupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
-    // if (currentUser != null) {
-    //   return Text(currentUser.email!);
-    // } 
-    // else {
+    if (currentUser != null) {
+      // return Text(currentUser.email!);
+      return WidgetTree();
+    } 
+    else {
+      // sign in first
       return Scaffold(
         appBar: AppbarWidget(),
         bottomNavigationBar: _signin(context),
@@ -43,7 +45,7 @@ class SignupPage extends StatelessWidget {
         ),
       );
       
-    // }
+    }
   }
 
   Widget _emailAddress() {
@@ -103,7 +105,7 @@ class SignupPage extends StatelessWidget {
         User? user = await _authService.signInWithGoogle();
         // If sign-in is successful, navigate to the HomeScreen
         if (user != null) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             // MaterialPageRoute(builder: (_) => HomeScreen(user: user)),
             MaterialPageRoute(builder: (_) => WidgetTree()),
@@ -148,7 +150,7 @@ class SignupPage extends StatelessWidget {
               ),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => LoginPage()),
                   );

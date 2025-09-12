@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/utils/show_toast.dart';
-import 'package:flutter_application_1/views/pages/signup_page.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
 
 // import '../pages/home/home.dart';
@@ -77,9 +76,5 @@ class AuthService {
   Future<void> signout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     await Future.delayed(const Duration(seconds: 1));
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (BuildContext context) => SignupPage()),
-    );
   }
 }

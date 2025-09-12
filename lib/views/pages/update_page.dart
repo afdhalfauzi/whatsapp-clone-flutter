@@ -4,14 +4,18 @@ import 'package:flutter_application_1/data/database_manager.dart';
 import 'package:provider/provider.dart';
 
 class UpdatePage extends StatefulWidget {
-  final User user;
-  const UpdatePage({super.key, required this.user});
+  const UpdatePage({super.key});
 
   @override
   State<UpdatePage> createState() => _UpdatePageState();
 }
 
 class _UpdatePageState extends State<UpdatePage> {
+  late User? _currentUser;
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+  }
   List<List<String>> stories = [
     ["orang", "Yesterday 14:45"],
     ["orang juga", "Yesterday 12:23"],
@@ -29,11 +33,11 @@ class _UpdatePageState extends State<UpdatePage> {
         ListTile(
           leading: CircleAvatar(
             backgroundImage: NetworkImage(
-              widget.user.photoURL!,
+              _currentUser!.photoURL!,
             ),
           ),
-          title: Text(widget.user.displayName!),
-          subtitle: Text(widget.user.email!),
+          title: Text(_currentUser!.displayName!),
+          subtitle: Text(_currentUser!.email!),
         ),
         Container(
           alignment: Alignment.centerLeft,
