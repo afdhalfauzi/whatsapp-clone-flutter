@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/utils/show_toast.dart';
+import 'package:flutter_application_1/views/pages/verify_email_page.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
 
 // import '../pages/home/home.dart';
@@ -11,18 +13,31 @@ class AuthService {
     required String email,
     required String password,
     required BuildContext context,
+    required String displayName,
+    required String photoURL,
   }) async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential cred = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
 
+      User? user = cred.user;
+      
+      if (user != null) {
+        await user.updateDisplayName(displayName);
+        await user.updatePhotoURL(photoURL);
+        //Send Verification
+        if (!user.emailVerified) {
+          await user.sendEmailVerification();
+          showToast("Verification email has been sent to ${user.email}");
+        }
+      }
+
+      //Navigate
       await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (BuildContext context) => const WidgetTree(),
+          builder: (BuildContext context) => const VerifyEmailPage(),
         ),
       );
     } on FirebaseAuthException catch (e) {
@@ -60,8 +75,8 @@ class AuthService {
       String message = '';
       if (e.code == 'invalid-email') {
         message = 'No user found for that email.';
-      } else if (e.code == 'invalid-credential') {
-        message = 'Invalid credential.';
+      } else if (e.code == 'invalid-credential' || e.code=='wrong-password') {
+        message = 'Wrong password. Did you sign up with Google?';
       } else if (e.code == 'user-disabled') {
         message = 'The user account has been disabled by an administrator.';
       } else if (e.code == 'user-not-found') {

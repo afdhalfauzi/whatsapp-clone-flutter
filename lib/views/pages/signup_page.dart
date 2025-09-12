@@ -81,6 +81,8 @@ class SignupPage extends StatelessWidget {
         await AuthService().signup(
           email: email_tf_controller.text,
           password: password_tf_controller.text,
+          displayName: email_tf_controller.text.split('@')[0],
+          photoURL: "https://cdn.vectorstock.com/i/1000v/66/13/default-avatar-profile-icon-social-media-user-vector-49816613.jpg",
           context: context,
         );
       },
