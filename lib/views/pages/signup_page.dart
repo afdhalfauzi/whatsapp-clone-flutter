@@ -7,12 +7,20 @@ import 'package:flutter_application_1/views/pages/xmp_signInWithGoogle.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
 import 'package:flutter_application_1/views/widgets/appbar_widget.dart';
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   SignupPage({super.key});
 
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
   final TextEditingController email_tf_controller = TextEditingController();
   final TextEditingController password_tf_controller = TextEditingController();
   final GoogleAuthService _authService = GoogleAuthService();
+
+  bool obscurePassword = true;
+  bool showPassChecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +28,7 @@ class SignupPage extends StatelessWidget {
     if (currentUser != null) {
       // return Text(currentUser.email!);
       return WidgetTree();
-    } 
-    else {
+    } else {
       // sign in first
       return Scaffold(
         appBar: AppbarWidget(),
@@ -35,6 +42,7 @@ class SignupPage extends StatelessWidget {
                 _emailAddress(),
                 const SizedBox(height: 20),
                 _password(),
+                _showPassword(),
                 const SizedBox(height: 20),
                 _signup(context),
                 const SizedBox(height: 20),
@@ -44,7 +52,6 @@ class SignupPage extends StatelessWidget {
           ),
         ),
       );
-      
     }
   }
 
@@ -61,11 +68,28 @@ class SignupPage extends StatelessWidget {
   Widget _password() {
     return TextField(
       controller: password_tf_controller,
-      obscureText: true,
+      obscureText: obscurePassword,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         labelText: 'password',
       ),
+    );
+  }
+
+  Widget _showPassword() {
+    return Row(
+      children: [
+        Checkbox(
+          value: showPassChecked,
+          onChanged: (value) {
+            setState(() {
+              showPassChecked = value ?? false;
+              obscurePassword = !showPassChecked;
+            });
+          },
+        ),
+        Text("Show Password"),
+      ],
     );
   }
 
@@ -82,7 +106,8 @@ class SignupPage extends StatelessWidget {
           email: email_tf_controller.text,
           password: password_tf_controller.text,
           displayName: email_tf_controller.text.split('@')[0],
-          photoURL: "https://cdn.vectorstock.com/i/1000v/66/13/default-avatar-profile-icon-social-media-user-vector-49816613.jpg",
+          photoURL:
+              "https://cdn.vectorstock.com/i/1000v/66/13/default-avatar-profile-icon-social-media-user-vector-49816613.jpg",
           context: context,
         );
       },
@@ -152,7 +177,7 @@ class SignupPage extends StatelessWidget {
               ),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LoginPage()),
                   );

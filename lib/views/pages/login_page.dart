@@ -6,12 +6,23 @@ import 'package:flutter_application_1/views/pages/xmp_signInWithGoogle.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
+
   final GoogleAuthService _authService = GoogleAuthService();
+
+  bool obscurePassword = true;
+
+  bool showPassChecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +38,8 @@ class LoginPage extends StatelessWidget {
           },
           child: Container(
             margin: const EdgeInsets.only(left: 10),
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.arrow_back_ios_new_rounded,
-              ),
-            ),
+            decoration: const BoxDecoration(shape: BoxShape.circle),
+            child: const Center(child: Icon(Icons.arrow_back_ios_new_rounded)),
           ),
         ),
       ),
@@ -59,10 +64,11 @@ class LoginPage extends StatelessWidget {
               _emailAddress(),
               const SizedBox(height: 20),
               _password(),
+              _showPassword(),
               const SizedBox(height: 20),
               _signin(context),
               const SizedBox(height: 20),
-              _googleSignin(context,)
+              _googleSignin(context),
             ],
           ),
         ),
@@ -125,16 +131,30 @@ class LoginPage extends StatelessWidget {
           decoration: InputDecoration(
             filled: true,
             hintText: 'Password',
-            hintStyle: TextStyle(
-              fontWeight: FontWeight.normal,
-              fontSize: 14,
-            ),
+            hintStyle: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
             border: OutlineInputBorder(
               borderSide: BorderSide.none,
               borderRadius: BorderRadius.circular(14),
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _showPassword() {
+    return Row(
+      children: [
+        Checkbox(
+          value: showPassChecked,
+          onChanged: (value) {
+            setState(() {
+              showPassChecked = value ?? false;
+              obscurePassword = !showPassChecked;
+            });
+          },
+        ),
+        Text("Show Password"),
       ],
     );
   }
@@ -154,7 +174,13 @@ class LoginPage extends StatelessWidget {
           context: context,
         );
       },
-      child: Text("Sign In", style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onTertiary),)
+      child: Text(
+        "Sign In",
+        style: TextStyle(
+          fontSize: 16,
+          color: Theme.of(context).colorScheme.onTertiary,
+        ),
+      ),
     );
   }
 
@@ -167,17 +193,11 @@ class LoginPage extends StatelessWidget {
           children: [
             const TextSpan(
               text: "New User? ",
-              style: TextStyle(
-                fontWeight: FontWeight.normal,
-                fontSize: 16,
-              ),
+              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
             ),
             TextSpan(
               text: "Create Account",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
                   Navigator.pop(context);
