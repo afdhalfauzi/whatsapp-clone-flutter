@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/data/database_manager.dart';
+import 'package:flutter_application_1/data/firestore_manager.dart';
 import 'package:flutter_application_1/mqtt/mqtt_connection.dart';
 import 'package:flutter_application_1/utils/show_toast.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +36,7 @@ class _FloatingbuttonNewStatusWidgetState extends State<FloatingbuttonNewStatusW
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        final db = Provider.of<DatabaseManager>(context, listen: false);
+        final db = Provider.of<FirestoreManager>(context, listen: false);
         db.newUser("Ada", "Hello, I'm Ada!", "13:23");
         // db.updateUser("1", {"chat": "Updated chat message!", "time": "14:00"});
         db.deleteUser( "3");

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/data/database_manager.dart';
+import 'package:flutter_application_1/data/firestore_manager.dart';
 import 'package:flutter_application_1/mqtt/mqtt_app_state.dart';
 import 'package:flutter_application_1/mqtt/mqtt_connection.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
@@ -32,7 +32,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    final db = Provider.of<DatabaseManager>(context, listen: false);
+    final db = Provider.of<FirestoreManager>(context, listen: false);
     mqttAppState = Provider.of<MQTTAppState>(context);
 
     return Scaffold(

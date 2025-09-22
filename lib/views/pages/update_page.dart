@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/data/database_manager.dart';
+import 'package:flutter_application_1/data/firestore_manager.dart';
 import 'package:provider/provider.dart';
 
 class UpdatePage extends StatefulWidget {
@@ -27,7 +27,7 @@ class _UpdatePageState extends State<UpdatePage> {
 
   @override
   Widget build(BuildContext context) {
-    final db = Provider.of<DatabaseManager>(context, listen: false);
+    final db = Provider.of<FirestoreManager>(context, listen: false);
     return ListView(
       children: [
         ListTile(

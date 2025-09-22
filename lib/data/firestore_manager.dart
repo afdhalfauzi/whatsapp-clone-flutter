@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
-class DatabaseManager {
+class FirestoreManager {
   final CollectionReference userCollection =
       db.collection('users'); // Collection reference
   final CollectionReference chatCollection =
