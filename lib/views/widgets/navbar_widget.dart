@@ -15,9 +15,9 @@ class _NavbarWidgetState extends State<NavbarWidget> {
     return ValueListenableBuilder(valueListenable: selectedPageNotifier, builder: (context, selectedPage, child) {
       return NavigationBar(
         destinations: [
-          NavigationDestination(icon: Icon(Icons.chat_bubble), label: 'Chat'),
+          NavigationDestination(icon: Icon(Icons.chat_rounded), label: 'Chat'),
           NavigationDestination(icon: Icon(Icons.update), label: 'Update'),
-          NavigationDestination(icon: Icon(Icons.group), label: 'Communities'),
+          NavigationDestination(icon: Icon(Icons.groups_2), label: 'Communities'),
           NavigationDestination(icon: Icon(Icons.call), label: 'Calls'),
         ],
         selectedIndex: selectedPage,
