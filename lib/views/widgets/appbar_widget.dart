@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/data/api_manager.dart';
 import 'package:flutter_application_1/data/notifiers.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/views/pages/signup_page.dart';
 import 'package:flutter_application_1/views/pages/xmp_signInWithGoogle.dart';
+import 'package:provider/provider.dart';
 
 class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
   AppbarWidget({super.key});
@@ -13,7 +16,12 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
     Icons.search,
     Icons.search,
   ];
-  static const List title = ["WhatsApp", "Updates", "Communities", "Calls"];
+  static const List title = [
+    "WhatsApp Clone",
+    "Updates",
+    "Communities",
+    "Calls",
+  ];
   final GoogleAuthService _googleAuthService = GoogleAuthService();
 
   @override
@@ -42,6 +50,9 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
                 PopupMenuItem(
                   child: Text('Sign Out'),
                   onTap: () async {
+                    final api = Provider.of<APIManager>(context, listen: false);
+                    final currentUser = FirebaseAuth.instance.currentUser;
+                    api.put(table: "tenant", newData: {"tenantId":currentUser!.uid,"fcmToken":""});
                     await AuthService().signout(context);
                     _googleAuthService.signOut();
                     Navigator.pushReplacement(

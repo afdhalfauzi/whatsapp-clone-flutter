@@ -1,10 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/data/api_manager.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/services/notification_service.dart';
 import 'package:flutter_application_1/views/pages/xmp_signInWithGoogle.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -126,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         const SizedBox(height: 16),
         TextField(
-          obscureText: true,
+          obscureText: obscurePassword,
           controller: _passwordController,
           decoration: InputDecoration(
             filled: true,
@@ -168,11 +172,18 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0,
       ),
       onPressed: () async {
-        await AuthService().signin(
+        final api = Provider.of<APIManager>(context, listen: false);
+        final notif = Provider.of<NotificationService>(context, listen: false);
+
+        User? user = await AuthService().signin(
           email: _emailController.text,
           password: _passwordController.text,
           context: context,
         );
+        api.put(table: "tenant", newData: {
+          "tenantId": user!.uid,
+          "fcmToken": notif.FCMToken
+        });
       },
       child: Text(
         "Sign In",
@@ -210,6 +221,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _googleSignin(context) {
+    final notif = Provider.of<NotificationService>(context, listen: false);
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
@@ -218,14 +230,38 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0,
       ),
       onPressed: () async {
-        // await signInWithGoogle();
         // Attempt to sign in with Google
         User? user = await _authService.signInWithGoogle();
-        // If sign-in is successful, navigate to the HomeScreen
         if (user != null) {
+          final api = Provider.of<APIManager>(context, listen: false);
+
+          final existingTenant = await api.get(
+            table: "tenant",
+            condition: {"tenantId": user.uid},
+          );
+
+          if (existingTenant != null && existingTenant.isNotEmpty) {
+            await api.put(table: "tenant", newData: {"tenantId": user.uid, "fcmToken":notif.FCMToken});
+          } else {
+            api.post(
+              table: "tenant",
+              newData: {
+                "tenantId": user.uid,
+                "roomId": null,
+                "name": user.displayName,
+                "email": user.email,
+                "photoUrl": user.photoURL,
+                "phoneNumber": user.phoneNumber,
+                "accountProvider": "google",
+                "fcmToken": notif.FCMToken,
+                "createdAt": DateFormat(
+                  'yyyy-MM-dd HH:mm:ss',
+                ).format(DateTime.now()),
+              },
+            );
+          }
           Navigator.push(
             context,
-            // MaterialPageRoute(builder: (_) => HomeScreen(user: user)),
             MaterialPageRoute(builder: (_) => WidgetTree()),
           );
         }

@@ -1,11 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/data/api_manager.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/services/notification_service.dart';
 import 'package:flutter_application_1/views/pages/login_page.dart';
 import 'package:flutter_application_1/views/pages/xmp_signInWithGoogle.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
 import 'package:flutter_application_1/views/widgets/appbar_widget.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class SignupPage extends StatefulWidget {
   SignupPage({super.key});
@@ -46,7 +50,7 @@ class _SignupPageState extends State<SignupPage> {
                 const SizedBox(height: 20),
                 _signup(context),
                 const SizedBox(height: 20),
-                _googleSignin(context),
+                // _googleSignin(context),
               ],
             ),
           ),
@@ -102,13 +106,32 @@ class _SignupPageState extends State<SignupPage> {
         elevation: 0,
       ),
       onPressed: () async {
-        await AuthService().signup(
+        final api = Provider.of<APIManager>(context, listen: false);
+        final notif = Provider.of<NotificationService>(context, listen: false);
+
+        User? user = await AuthService().signup(
           email: email_tf_controller.text,
           password: password_tf_controller.text,
           displayName: email_tf_controller.text.split('@')[0],
           photoURL:
               "https://cdn.vectorstock.com/i/1000v/66/13/default-avatar-profile-icon-social-media-user-vector-49816613.jpg",
           context: context,
+        );
+        api.post(
+          table: "tenant",
+          newData: {
+            "tenantId": user!.uid,
+            "roomId": null,
+            "name": user.displayName,
+            "email": user.email,
+            "photoUrl": user.photoURL,
+            "phoneNumber": user.phoneNumber,
+            "accountProvider": "email",
+            "fcmToken": notif.FCMToken,
+            "createdAt": DateFormat(
+              'yyyy-MM-dd HH:mm:ss',
+            ).format(DateTime.now()),
+          },
         );
       },
       child: Text(
@@ -127,7 +150,6 @@ class _SignupPageState extends State<SignupPage> {
         elevation: 0,
       ),
       onPressed: () async {
-        // await signInWithGoogle();
         // Attempt to sign in with Google
         User? user = await _authService.signInWithGoogle();
         // If sign-in is successful, navigate to the HomeScreen

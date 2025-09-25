@@ -1,15 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/utils/show_toast.dart';
 import 'package:flutter_application_1/views/pages/verify_email_page.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
 
-// import '../pages/home/home.dart';
-// import '../pages/login/login.dart';
-
 class AuthService {
-  Future<void> signup({
+  Future<User?> signup({
     required String email,
     required String password,
     required BuildContext context,
@@ -21,7 +17,7 @@ class AuthService {
           .createUserWithEmailAndPassword(email: email, password: password);
 
       User? user = cred.user;
-      
+
       if (user != null) {
         await user.updateDisplayName(displayName);
         await user.updatePhotoURL(photoURL);
@@ -40,6 +36,7 @@ class AuthService {
           builder: (BuildContext context) => const VerifyEmailPage(),
         ),
       );
+      return user;
     } on FirebaseAuthException catch (e) {
       String message = '';
       if (e.code == 'weak-password') {
@@ -53,16 +50,18 @@ class AuthService {
     } catch (e) {}
   }
 
-  Future<void> signin({
+  Future<User?> signin({
     required String email,
     required String password,
     required BuildContext context,
   }) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential cred = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      User? user = cred.user;
 
       await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacement(
@@ -71,11 +70,13 @@ class AuthService {
           builder: (BuildContext context) => const WidgetTree(),
         ),
       );
+
+      return user;
     } on FirebaseAuthException catch (e) {
       String message = '';
       if (e.code == 'invalid-email') {
         message = 'No user found for that email.';
-      } else if (e.code == 'invalid-credential' || e.code=='wrong-password') {
+      } else if (e.code == 'invalid-credential' || e.code == 'wrong-password') {
         message = 'Wrong password. Did you sign up with Google?';
       } else if (e.code == 'user-disabled') {
         message = 'The user account has been disabled by an administrator.';
