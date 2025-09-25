@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/data/api_manager.dart';
 import 'package:flutter_application_1/data/firestore_manager.dart';
 import 'package:flutter_application_1/mqtt/mqtt_connection.dart';
 import 'package:flutter_application_1/utils/show_toast.dart';
@@ -27,11 +28,12 @@ class FloatingbuttonNewStatusWidget extends StatefulWidget {
   const FloatingbuttonNewStatusWidget({super.key});
 
   @override
-  State<FloatingbuttonNewStatusWidget> createState() => _FloatingbuttonNewStatusWidgetState();
+  State<FloatingbuttonNewStatusWidget> createState() =>
+      _FloatingbuttonNewStatusWidgetState();
 }
 
-class _FloatingbuttonNewStatusWidgetState extends State<FloatingbuttonNewStatusWidget> {
-  
+class _FloatingbuttonNewStatusWidgetState
+    extends State<FloatingbuttonNewStatusWidget> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
@@ -39,17 +41,24 @@ class _FloatingbuttonNewStatusWidgetState extends State<FloatingbuttonNewStatusW
         final db = Provider.of<FirestoreManager>(context, listen: false);
         db.newUser("Ada", "Hello, I'm Ada!", "13:23");
         // db.updateUser("1", {"chat": "Updated chat message!", "time": "14:00"});
-        db.deleteUser( "3");
-        db.getUser("1").then((doc) {
-          if (doc.exists) {
-            final data = doc.data() as Map<String, dynamic>;
-            showSnackbar(context, "User: ${data['name']}, Chat: ${data['chat']}, Time: ${data['time']}", 2000);
-          } else {
-            showSnackbar(context, "No such user!", 1000);
-          }
-        }).catchError((error) {
-          showSnackbar(context, "Error fetching user: $error", 2000);
-        });
+        db.deleteUser("3");
+        db
+            .getUser("1")
+            .then((doc) {
+              if (doc.exists) {
+                final data = doc.data() as Map<String, dynamic>;
+                showSnackbar(
+                  context,
+                  "User: ${data['name']}, Chat: ${data['chat']}, Time: ${data['time']}",
+                  2000,
+                );
+              } else {
+                showSnackbar(context, "No such user!", 1000);
+              }
+            })
+            .catchError((error) {
+              showSnackbar(context, "Error fetching user: $error", 2000);
+            });
       },
       tooltip: 'New Status',
       backgroundColor: Colors.green,
@@ -65,7 +74,12 @@ class FloatingbuttonNewCommunityWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () {},
+      onPressed: () async {
+        final api = Provider.of<APIManager>(context, listen: false);
+        await api.sendNotification(
+          "dIqXPpPEQt-n4UUj5arMta:APA91bELteVVYRgYyGQlIRtS2gxMdB9KejhBzxKVQnbMjHfdhQIluKtmKRoPewVK8umNr4FrGx5fca2XgwirH0rq2FTlKbvu1PxGE7kqrjJtkKp_MNIVvnk",
+        );
+      },
       tooltip: 'New Community',
       backgroundColor: Colors.green,
       foregroundColor: Colors.black,

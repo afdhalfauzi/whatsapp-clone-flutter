@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/data/notifiers.dart';
+import 'package:flutter_application_1/services/notification_service.dart';
 import 'package:flutter_application_1/views/pages/calls_page.dart';
 import 'package:flutter_application_1/views/pages/communities_page.dart';
 import 'package:flutter_application_1/views/pages/chat/chats_page.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_application_1/views/pages/update_page.dart';
 import 'package:flutter_application_1/views/widgets/appbar_widget.dart';
 import 'package:flutter_application_1/views/widgets/floatingbutton_widget.dart';
 import 'package:flutter_application_1/views/widgets/navbar_widget.dart';
+import 'package:provider/provider.dart';
 
 List<Widget> pages = [ChatPage(), UpdatePage(), CommunitiesPage(), CallsPage()];
 List<Widget> fabButtons = [
@@ -50,7 +52,8 @@ class _WidgetTreeState extends State<WidgetTree> {
 
   @override
   Widget build(BuildContext context) {
-
+    final notif = Provider.of<NotificationService>(context, listen: false);
+    // notif.initNotifications();
     return ValueListenableBuilder(
       valueListenable: selectedPageNotifier,
       builder: (context, selectedPage, child) {
