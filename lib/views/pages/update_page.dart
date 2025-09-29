@@ -12,10 +12,12 @@ class UpdatePage extends StatefulWidget {
 
 class _UpdatePageState extends State<UpdatePage> {
   late User? _currentUser;
+  @override
   void initState() {
     super.initState();
     _currentUser = FirebaseAuth.instance.currentUser;
   }
+
   List<List<String>> stories = [
     ["orang", "Yesterday 14:45"],
     ["orang juga", "Yesterday 12:23"],
@@ -32,12 +34,12 @@ class _UpdatePageState extends State<UpdatePage> {
       children: [
         ListTile(
           leading: CircleAvatar(
-            backgroundImage: NetworkImage(
-              _currentUser!.photoURL!,
-            ),
+            backgroundImage: _currentUser?.photoURL != null
+                ? NetworkImage(_currentUser!.photoURL!)
+                : AssetImage("assets/images/default_avatar.webp"),
           ),
-          title: Text(_currentUser!.displayName!),
-          subtitle: Text(_currentUser!.email!),
+          title: Text(_currentUser!.displayName ?? "New User"),
+          subtitle: Text(_currentUser!.email ?? "No Email"),
         ),
         Container(
           alignment: Alignment.centerLeft,
@@ -47,27 +49,20 @@ class _UpdatePageState extends State<UpdatePage> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
           ),
         ),
-        // ListView.builder(
-        //   itemCount: stories.length,
-        //   itemBuilder: (context, index) {
         ...List.generate(stories.length, (index) {
-            return ListTile(
-              title: Text(stories[index][0], overflow: TextOverflow.ellipsis),
-              subtitle: Text(
-                stories[index][1],
-                overflow: TextOverflow.ellipsis,
+          return ListTile(
+            title: Text(stories[index][0], overflow: TextOverflow.ellipsis),
+            subtitle: Text(stories[index][1], overflow: TextOverflow.ellipsis),
+            leading: CircleAvatar(
+              radius: 25 + 4,
+              backgroundColor: Colors.green,
+              child: CircleAvatar(
+                radius: 25,
+                backgroundImage: AssetImage('assets/images/${index + 1}.jpg'),
               ),
-              leading: CircleAvatar(
-                radius: 25 + 4,
-                backgroundColor: Colors.green,
-                child: CircleAvatar(
-                  radius: 25,
-                  backgroundImage: AssetImage('assets/images/${index + 1}.jpg'),
-                ),
-              ),
-            );
-          },
-        ),
+            ),
+          );
+        }),
         FutureBuilder(
           future: db.getAllUsers(),
           builder: (context, snapshot) {

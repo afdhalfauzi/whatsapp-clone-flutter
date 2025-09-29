@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/utils/show_toast.dart';
-import 'package:flutter_application_1/views/pages/verify_email_page.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
 
-class AuthService {
+class EmailAuthService {
   Future<User?> signup({
     required String email,
     required String password,
@@ -28,21 +27,13 @@ class AuthService {
         }
       }
 
-      //Navigate
-      await Future.delayed(const Duration(seconds: 1));
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => const VerifyEmailPage(),
-        ),
-      );
       return user;
     } on FirebaseAuthException catch (e) {
       String message = '';
       if (e.code == 'weak-password') {
         message = 'The password provided is too weak.';
       } else if (e.code == 'email-already-in-use') {
-        message = 'An account already exists with that email.';
+        message = 'An account already exists with that email. Try Sign in';
       } else if (e.code == 'invalid-email') {
         message = 'The email is invalid.';
       }
