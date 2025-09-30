@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/phone_auth_service.dart';
+import 'package:flutter_application_1/views/pages/otp_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
@@ -18,6 +19,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
 
   bool obscurePassword = true;
   bool showPassChecked = false;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -103,9 +105,22 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
         elevation: 0,
       ),
       onPressed: () async {
-        await PhoneAuthService().sendOTP(context: context, phoneNumber: phoneNumber!.completeNumber);
+        setState(() => isLoading = true);
+        String? verificationId = await PhoneAuthService().sendOTP(context: context, phoneNumber: phoneNumber!.completeNumber);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OTPVerificationPage(
+              phoneNumber: phoneNumber!.completeNumber,
+              verificationId: verificationId!,
+            ),
+          ),
+        );
+        setState(() => isLoading = false);
       },
-      child: Text(
+      child: isLoading
+      ? CircularProgressIndicator(color:Colors.white)
+      : Text(
         "Generate OTP",
         style: TextStyle(
           fontSize: 16,

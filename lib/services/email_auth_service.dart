@@ -55,12 +55,7 @@ class EmailAuthService {
       User? user = cred.user;
 
       await Future.delayed(const Duration(seconds: 1));
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => const WidgetTree(),
-        ),
-      );
+      
 
       return user;
     } on FirebaseAuthException catch (e) {

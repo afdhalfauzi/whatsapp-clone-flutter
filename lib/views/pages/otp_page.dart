@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/data/api_manager.dart';
 import 'package:flutter_application_1/services/notification_service.dart';
 import 'package:flutter_application_1/services/phone_auth_service.dart';
+import 'package:flutter_application_1/views/widget_tree.dart';
 import 'package:intl/intl.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,7 @@ class OTPVerificationPage extends StatefulWidget {
 
 class _OTPVerificationPageState extends State<OTPVerificationPage> {
   final TextEditingController _otpController = TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +72,7 @@ class _OTPVerificationPageState extends State<OTPVerificationPage> {
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () async {
+                setState(() => isLoading = true);
                 User? user = await PhoneAuthService().verifyOTP(
                   context: context,
                   verificationId: widget.verificationId,
@@ -115,7 +118,15 @@ class _OTPVerificationPageState extends State<OTPVerificationPage> {
                       },
                     );
                   }
+                  setState(() => isLoading = false);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => const WidgetTree(),
+                    ),
+                  );
                 }
+                else{setState(() => isLoading = false);}
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
@@ -123,7 +134,9 @@ class _OTPVerificationPageState extends State<OTPVerificationPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text("Verify"),
+              child: isLoading
+                  ? CircularProgressIndicator(color: Colors.white)
+                  : const Text("Verify"),
             ),
           ],
         ),

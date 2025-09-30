@@ -1,14 +1,17 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/utils/show_toast.dart';
 import 'package:flutter_application_1/views/pages/otp_page.dart';
-import 'package:flutter_application_1/views/widget_tree.dart';
 
 class PhoneAuthService {
-  Future<void> sendOTP({
+  Future<String?> sendOTP({
     required BuildContext context,
     required String phoneNumber,
   }) async {
+    final completer = Completer<String?>();
+
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
@@ -19,20 +22,12 @@ class PhoneAuthService {
         print("Verification failed: ${e.message}");
       },
       codeSent: (String verificationId, int? resendToken) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => OTPVerificationPage(
-              phoneNumber: phoneNumber,
-              verificationId: verificationId,
-            ),
-          ),
-        );
-        // Save verificationId and use it for OTP input
         print("Verification ID: $verificationId");
+        completer.complete(verificationId);
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
     );
+    return completer.future;
   }
 
   Future<User?> verifyOTP({
@@ -50,12 +45,6 @@ class PhoneAuthService {
         credential,
       );
       print("User logged in: ${user.user?.phoneNumber}");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => const WidgetTree(),
-        ),
-      );
 
       return user.user;
     } on FirebaseAuthException catch (e) {

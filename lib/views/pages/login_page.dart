@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool obscurePassword = true;
   bool showPassChecked = false;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +71,13 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 20),
               _signin(context),
               const SizedBox(height: 20),
-              Row(children: [_googleSignin(context),const SizedBox(width: 10), _phoneSignin(context)]),
+              Row(
+                children: [
+                  _googleSignin(context),
+                  const SizedBox(width: 10),
+                  _phoneSignin(context),
+                ],
+              ),
             ],
           ),
         ),
@@ -170,6 +177,7 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0,
       ),
       onPressed: () async {
+        setState(() => isLoading = true);
         final api = Provider.of<APIManager>(context, listen: false);
         final notif = Provider.of<NotificationService>(context, listen: false);
 
@@ -178,12 +186,23 @@ class _LoginPageState extends State<LoginPage> {
           password: _passwordController.text,
           context: context,
         );
-        api.put(
-          table: "tenant",
-          newData: {"tenantId": user!.uid, "fcmToken": notif.FCMToken},
-        );
+        setState(() => isLoading = false);
+        if (user != null) {
+          api.put(
+            table: "tenant",
+            newData: {"tenantId": user.uid, "fcmToken": notif.FCMToken},
+          );
+        }
+        Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const WidgetTree(),
+        ),
+      );
       },
-      child: Text(
+      child: isLoading
+      ? CircularProgressIndicator(color: Colors.white,)
+      : Text(
         "Sign In",
         style: TextStyle(
           fontSize: 16,
@@ -232,8 +251,10 @@ class _LoginPageState extends State<LoginPage> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          side: BorderSide(color: Colors.black26, width:1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          side: BorderSide(color: Colors.black26, width: 1),
           minimumSize: const Size(double.infinity, 60),
           elevation: 0,
         ),
@@ -242,12 +263,12 @@ class _LoginPageState extends State<LoginPage> {
           User? user = await GoogleAuthService().signInWithGoogle();
           if (user != null) {
             final api = Provider.of<APIManager>(context, listen: false);
-      
+
             final existingTenant = await api.get(
               table: "tenant",
               condition: {"tenantId": user.uid},
             );
-      
+
             if (existingTenant.isNotEmpty) {
               await api.put(
                 table: "tenant",
@@ -282,10 +303,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Image.asset('assets/images/google_logo.png', height: 32, width: 32),
             const SizedBox(width: 8),
-            const Text(
-              'Google',
-              style: TextStyle(color: Colors.black),
-            ),
+            const Text('Google', style: TextStyle(color: Colors.black)),
           ],
         ),
       ),
@@ -297,20 +315,24 @@ class _LoginPageState extends State<LoginPage> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          side: BorderSide(color: Colors.black26, width:1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          side: BorderSide(color: Colors.black26, width: 1),
           minimumSize: const Size(double.infinity, 60),
           elevation: 0,
         ),
-        onPressed: () {Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => LoginPhonePage()),
-            );},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => LoginPhonePage()),
+          );
+        },
         child: Row(
           children: [
-            Icon(Icons.phone_android,color: Colors.black,size: 24,),
+            Icon(Icons.phone_android, color: Colors.black, size: 24),
             const SizedBox(width: 8),
-            const Text('Phone Number',style: TextStyle(color: Colors.black)),
+            const Text('Phone Number', style: TextStyle(color: Colors.black)),
           ],
         ),
       ),

@@ -1,6 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/data/api_manager.dart';
+import 'package:flutter_application_1/services/notification_service.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
@@ -22,15 +26,31 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
     if (user != null && user.emailVerified) {
       setState(() => isVerified = true);
+      final api = Provider.of<APIManager>(context, listen: false);
+      final notif = Provider.of<NotificationService>(context, listen: false);
+      api.post(
+        table: "tenant",
+        newData: {
+          "tenantId": user.uid,
+          "roomId": null,
+          "name": user.displayName,
+          "email": user.email,
+          "photoUrl": user.photoURL,
+          "phoneNumber": user.phoneNumber,
+          "accountProvider": "email",
+          "fcmToken": notif.FCMToken,
+          "createdAt": DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+        },
+      );
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const WidgetTree()),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email not verified yet.")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Email not verified yet.")));
     }
 
     setState(() => isChecking = false);
@@ -49,6 +69,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   const Text(
                     "We’ve sent a verification link to your email.\n"
                     "Please verify before continuing.",
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Didn't get the email? check your spam folder or try resending",
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
